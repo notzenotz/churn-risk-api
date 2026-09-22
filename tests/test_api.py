@@ -58,3 +58,12 @@ def test_model_expects_the_training_features_in_order():
         "IsActiveMember", "EstimatedSalary", "SaldoNol", "IsFemale",
         "Geography_Germany", "Geography_Spain",
     ]
+
+
+
+def test_risk_level_labels():
+    from app.main import risk_level
+    assert risk_level(0.10) == "low"
+    assert risk_level(0.30) == "medium"
+    assert risk_level(0.69) == "medium"
+    assert risk_level(0.70) == "high"

@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from app.model import ChurnModel
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 THRESHOLD = float(os.getenv("CHURN_THRESHOLD", "0.5"))
 
 app = FastAPI(
@@ -35,6 +35,7 @@ class Customer(BaseModel):
 class Prediction(BaseModel):
     churn_risk: float = Field(description="Risk score between 0 and 1")
     at_risk: bool = Field(description="True when churn_risk is at or above the threshold")
+    risk_level: Literal["low", "medium", "high"] = Field(description="low < 0.3 <= medium < 0.7 <= high")
     threshold: float
     model_version: str
 
@@ -49,8 +50,16 @@ def health():
     return {"status": "ok"}
 
 
+def risk_level(risk: float) -> str:
+    if risk < 0.3:
+        return "low"
+    if risk < 0.7:
+        return "medium"
+    return "high"
+
+
 @app.post("/predict", response_model=Prediction)
 def predict(customer: Customer):
     risk = model.predict(customer.model_dump())
     return Prediction(churn_risk=round(risk, 4), at_risk=risk >= THRESHOLD,
-                      threshold=THRESHOLD, model_version=VERSION)
+                      risk_level=risk_level(risk), threshold=THRESHOLD, model_version=VERSION)
