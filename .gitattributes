@@ -1,0 +1,4 @@
+# Server files must keep Linux line endings, even when edited on Windows
+*.sh text eol=lf
+*.yml text eol=lf
+*.service text eol=lf

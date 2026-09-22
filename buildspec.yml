@@ -1,0 +1,32 @@
+# CodeBuild: install the libraries, run the tests, and package what the server needs.
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - pip install --upgrade pip
+      - pip install -r requirements-dev.txt
+  build:
+    commands:
+      - pytest -v --junitxml=reports/junit.xml
+  post_build:
+    commands:
+      - chmod +x scripts/*.sh
+
+reports:
+  pytest-reports:
+    files:
+      - junit.xml
+    base-directory: reports
+    file-format: JUNITXML
+
+artifacts:
+  files:
+    - appspec.yml
+    - app/**/*
+    - model/**/*
+    - scripts/**/*
+    - deploy/**/*
+    - requirements.txt
