@@ -53,7 +53,7 @@ def health():
 def risk_level(risk: float) -> str:
     if risk < 0.3:
         return "low"
-    if risk < 0.7:
+    if risk < 0.8:
         return "medium"
     return "high"
 
